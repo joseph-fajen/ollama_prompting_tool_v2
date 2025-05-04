@@ -1,0 +1,5 @@
+requests>=2.25.0
+rich>=10.0.0
+pyyaml>=6.0
+uuid>=1.30
+keyring>=23.0.0

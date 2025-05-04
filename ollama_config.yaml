@@ -1,0 +1,15 @@
+api_key: null
+base_url: http://localhost:11434
+config_version: '1.0'
+default_chat_mode: false
+default_max_workers: null
+default_model: gpt-4o
+default_models: []
+default_provider: openai
+default_save: true
+default_stream: false
+default_system_prompt: system_prompts/ai_technical_documentation_facilitator.md
+default_timeout: 1200
+default_user_prompt: user_prompts/10_documentation_modernization_agent.md
+openai_base_url: https://api.openai.com
+use_menu: true
