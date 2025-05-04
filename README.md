@@ -15,10 +15,13 @@ See [ChatMode.md](ChatMode.md) for using the new chat mode and API compatibility
 - Streaming or batch response modes
 - Response saving to markdown files
 - Progress tracking with rich console output
-- Persistent configuration system to save default settings
+- Persistent configuration system with environment variable support
 - **New:** Interactive chat mode with conversation history
 - **New:** Support for multiple LLM providers (Ollama, OpenAI, Hugging Face)
 - **New:** Conversation management (save/load/list conversations)
+- **New:** Type-safe configuration management
+- **New:** Comprehensive error handling with custom exceptions
+- **New:** Automated testing suite for core functionality
 
 ## Prerequisites
 
@@ -50,7 +53,12 @@ See [ChatMode.md](ChatMode.md) for using the new chat mode and API compatibility
 
 3. Set up API keys (if using OpenAI or HuggingFace):
    ```bash
+   # Interactive setup
    python ollama_chat.py --setup-keys
+   
+   # Or use environment variables
+   export OLLAMA_TOOL_OPENAI_API_KEY="your_openai_key"
+   export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
    ```
 
 ### For Ollama Provider
@@ -143,6 +151,40 @@ python ollama_prompt.py --provider huggingface --model mistralai/Mistral-7B-Inst
 
 For more examples, see [test_examples.md](test_examples.md).
 
+## Default Behavior
+
+- If no options are specified, uses values from configuration
+- If no configuration exists, falls back to these defaults:
+  - Provider: Ollama
+  - Base URL: http://localhost:11434
+  - If no prompt file is specified, interactive input is requested
+  - If no system prompt is specified, only the user prompt is used
+  - If no model is specified:
+    - For Ollama: runs on all available models
+    - For OpenAI: uses gpt-3.5-turbo
+    - For HuggingFace: uses mistralai/Mistral-7B-Instruct-v0.1
+
+## Error Handling
+
+The tool implements comprehensive error handling with:
+
+1. Custom Exception Classes:
+   - `LLMError`: Base exception for all LLM-related errors
+   - `ConfigurationError`: For configuration issues
+   - `APIError`: For API-related errors
+
+2. User-friendly error messages with:
+   - Clear context information
+   - Suggested solutions
+   - Error type classification
+
+3. Error Categories:
+   - Configuration Errors
+   - API Errors
+   - Network Issues
+   - Authentication Problems
+   - Model Compatibility Issues
+
 ## Chat Mode
 
 The new chat mode provides an interactive conversation experience:
@@ -188,7 +230,7 @@ All providers implement a common interface, making it easy to switch between the
 
 ## Configuration System
 
-The tool uses a robust configuration system that:
+The tool uses a robust, type-safe configuration system that:
 
 1. Stores settings in `config/ollama_config.yaml`
 2. Supports environment variables:
@@ -207,7 +249,16 @@ The tool uses a robust configuration system that:
    
    # Reset to default configuration
    python ollama_chat.py --reset-config
+   
+   # Update specific settings
+   python ollama_chat.py --update-config provider=openai model=gpt-3.5-turbo
    ```
+
+4. Features:
+   - Type-safe configuration validation
+   - Automatic default value handling
+   - Secure API key storage
+   - Persistent settings across sessions
 
 The script now includes a configuration system that persists your preferred settings:
 
@@ -232,9 +283,11 @@ You can configure default values for:
    - Set reasonable timeouts for API calls
    - Use streaming mode for chat interactions
    - Configure max workers based on system resources
+   - Use environment variables for configuration
 
 2. **Security**:
    - Never hardcode API keys in code
+   - Use environment variables for API keys
    - Use the keyring system for secure storage
    - Regularly rotate API keys
    - Monitor API usage and costs
@@ -244,19 +297,4 @@ You can configure default values for:
    - Organize prompts in `system_prompts/` and `user_prompts/`
    - Save important conversations for reference
    - Use chat mode for iterative development
-
-4. **Error Handling**:
-   - The tool provides detailed error messages
-   - Check logs for troubleshooting
-   - Use try-catch blocks for critical operations
-   - Implement retry logic for API calls
-
-- If no options are specified, uses values from configuration
-- If no configuration exists, falls back to these defaults:
-  - Provider: Ollama
-  - If no prompt file is specified, interactive input is requested
-  - If no system prompt is specified, only the user prompt is used
-  - If no model is specified:
-    - For Ollama: runs on all available models
-    - For OpenAI: uses gpt-3.5-turbo
-    - For HuggingFace: uses mistralai/Mistral-7B-Instruct-v0.1
+   - Run tests before major changes
