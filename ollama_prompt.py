@@ -647,6 +647,24 @@ def display_interactive_cli_menu(client, provider="ollama"):
     console.print("\n[bold]1. Select models:[/bold]")
     
     # Show model categories with descriptions
+    def show_model_categories():
+        console.print("\n[bold]Model Categories:[/bold]")
+        console.print("[yellow]Fast Models:[/yellow]")
+        console.print("  1. phi3:mini - Fast, good for quick explanations")
+        console.print("[cyan]Detailed Analysis:[/cyan]")
+        console.print("  2. llama3:8b - Detailed analysis, slightly slower")
+        console.print("[green]Recommended:[/green]")
+        console.print("  3. phi3:mini (Recommended for most uses)")
+        console.print("  4. llama3:8b (Recommended for detailed analysis)")
+        
+        return {
+            "1": "phi3:mini",
+            "2": "llama3:8b",
+            "3": "phi3:mini",
+            "4": "llama3:8b"
+        }
+    
+    # Show model categories
     model_categories = show_model_categories()
     
     # Handle keyboard shortcuts
@@ -682,15 +700,7 @@ def display_interactive_cli_menu(client, provider="ollama"):
         try:
             selected_model = model_categories[choice]
             console.print(f"[green]Selected model: {selected_model}[/green]")
-        except KeyError:
-            console.print("[bold red]Invalid choice. Using recommended models.[/bold red]")
-            selected_models = ["phi3:mini", "llama3:8b"]
-    else:
-        selected_models = ["phi3:mini", "llama3:8b"]
-    if model_choice:
-        try:
-            selected_model = model_categories[model_choice]
-            console.print(f"[green]Selected model: {selected_model}[/green]")
+            selected_models = [selected_model]
         except KeyError:
             console.print("[bold red]Invalid choice. Using recommended models.[/bold red]")
             selected_models = ["phi3:mini", "llama3:8b"]
@@ -1381,6 +1391,34 @@ def main():
     console.print(f"  • System prompt: [green]{system_str}[/green]")
     console.print(f"  • Output mode: [green]{'Streaming' if stream else 'Complete'}[/green]")
     console.print(f"  • Save responses: [green]{'Yes' if save else 'No'}[/green]\n")
+    
+    # Helper function to show current selections
+    def show_current_selections():
+        console.print("\n[bold]Current Selections:[/bold]")
+        console.print(f"  • Provider: [green]{selected_provider.capitalize()}[/green]")
+        console.print(f"  • Models: [green]{', '.join(selected_models)}[/green]")
+        console.print(f"  • User prompt: [green]{selected_prompt or 'None'}[/green]")
+        console.print(f"  • System prompt: [green]{selected_system or 'None'}[/green]")
+        console.print(f"  • Output mode: [green]{'Streaming' if stream else 'Complete'}[/green]")
+        console.print(f"  • Save config: [green]{'Yes' if save_config else 'No'}[/green]")
+    
+    # Helper function to show model categories
+    def show_model_categories():
+        console.print("\n[bold]Model Categories:[/bold]")
+        console.print("[yellow]Fast Models:[/yellow]")
+        console.print("  1. phi3:mini - Fast, good for quick explanations")
+        console.print("[cyan]Detailed Analysis:[/cyan]")
+        console.print("  2. llama3:8b - Detailed analysis, slightly slower")
+        console.print("[green]Recommended:[/green]")
+        console.print("  3. phi3:mini (Recommended for most uses)")
+        console.print("  4. llama3:8b (Recommended for detailed analysis)")
+        
+        return {
+            "1": "phi3:mini",
+            "2": "llama3:8b",
+            "3": "phi3:mini",
+            "4": "llama3:8b"
+        }\n")
     
     # Run the model(s)
     if len(models_to_run) == 1:
