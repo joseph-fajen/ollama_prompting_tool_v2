@@ -34,16 +34,39 @@ The tool includes a robust configuration system with multiple ways to manage set
 
 ## Features
 
-- Interactive CLI menu for easy model and prompt selection
-- Support for system prompts and user prompts from files
-- Parallel model execution for faster multi-model processing
-- Streaming or batch response modes
-- Response saving to markdown files
-- Progress tracking with rich console output
-- Persistent configuration system with environment variable support
-- Type-safe configuration management
-- Comprehensive error handling with custom exceptions
-- Automated testing suite for core functionality
+- Enhanced Interactive CLI menu with:
+  - Model categories (Fast, Detailed Analysis)
+  - Prompt categories (Technical Writing, Code Analysis, Security)
+  - Keyboard shortcuts (q=quit, b=back, h=help, r=reset, s=save)
+  - Current selections display
+  - Comprehensive help system
+
+- Model Comparison with:
+  - Technical accuracy scoring (0-100)
+  - Clarity of explanation scoring (0-100)
+  - Response time measurement
+  - Word count analysis
+  - Multiple output modes (Real-time, Complete, Both, Save only)
+
+- Prompt Management:
+  - Organized prompt categories
+  - Custom prompt creation
+  - System prompt support
+  - Prompt preview
+
+- Response Options:
+  - Real-time streaming
+  - Complete formatted response
+  - Both (streaming + complete)
+  - Save only
+
+- Configuration Management:
+  - Command line arguments
+  - Environment variables
+  - Configuration file
+  - Interactive menu
+  - Default settings
+  - Type-safe configuration
 
 ## Enhanced Model Comparison Features
 
@@ -124,16 +147,39 @@ python ollama_prompt.py --setup-keys
 ## Provider Compatibility Guide
 
 ### Ollama (Recommended for Most Users)
-- **Pros**: No API keys required, local execution, no usage costs
-- **Cons**: Requires local resources for running models
-- **Best Models**: llama3:8b, phi3:mini, codellama:7b-instruct
-- **Use Case**: Everyday usage, development, testing
+- **Pros**: 
+  - No API keys required
+  - Local execution
+  - No usage costs
+  - Fast performance
+- **Cons**: 
+  - Requires local resources
+  - Limited to installed models
+- **Best Models**: 
+  - Fast: phi3:mini (recommended for quick responses)
+  - Detailed Analysis: llama3:8b (recommended for detailed analysis)
+- **Use Case**: 
+  - Everyday usage
+  - Development
+  - Testing
+  - Quick prototyping
 
 ### OpenAI
-- **Pros**: Professional-grade results, reliable API
-- **Cons**: Requires API key with billing set up
-- **Best Models**: gpt-4o, gpt-3.5-turbo, gpt-4-turbo
-- **Use Case**: Production use, high-quality outputs
+- **Pros**: 
+  - Professional-grade results
+  - Reliable API
+  - Consistent performance
+- **Cons**: 
+  - Requires API key with billing
+  - Cost-based usage
+- **Best Models**: 
+  - gpt-4o
+  - gpt-3.5-turbo
+  - gpt-4-turbo
+- **Use Case**: 
+  - Production use
+  - High-quality outputs
+  - Enterprise applications
 
 ## Common Issues
 

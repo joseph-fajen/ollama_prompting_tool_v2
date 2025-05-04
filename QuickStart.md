@@ -3,33 +3,27 @@
 ## Basic Usage
 
 ```bash
-# Interactive menu
+# Interactive menu (with enhanced features)
 python ollama_prompt.py
 
 # Bypass menu
 python ollama_prompt.py --no-menu
 
-# Specific model
-python ollama_prompt.py --model llama3:8b
-
-# Multiple models
-python ollama_prompt.py --models llama3:8b mixtral:latest phi3:mini
+# Select specific models
+python ollama_prompt.py --models phi3:mini llama3:8b
 
 # All models (Ollama provider only)
 python ollama_prompt.py --all-models
 
-# Using different providers
+# Using OpenAI
 python ollama_prompt.py --provider openai --model gpt-4o
 
-# Force display of interactive menu
-python ollama_prompt.py --force-menu
-
-# Set up API keys securely (for non-Ollama providers)
-python ollama_prompt.py --setup-keys
-
-# Use environment variables for API keys
-export OLLAMA_TOOL_OPENAI_API_KEY="your_openai_key"
-export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
+# Keyboard shortcuts in interactive menu:
+# q - Quit menu
+# b - Go back
+# h - Show help
+# r - Reset to defaults
+# s - Save current settings
 ```
 
 ## Provider and Model Recommendations
@@ -37,7 +31,9 @@ export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
 ### Ollama (Recommended for Most Users)
 - No API key required
 - Local execution
-- Good starter models: `llama3:8b`, `phi3:mini`, `codellama:7b-instruct`
+- Good starter models:
+  - Fast: `phi3:mini` (recommended for quick responses)
+  - Detailed Analysis: `llama3:8b` (recommended for detailed analysis)
 - Supports streaming for real-time responses
 - Best for: Everyday usage, development, testing
 
@@ -65,10 +61,16 @@ python ollama_prompt.py --provider openai --model gpt-4o --stream
 
 ```bash
 # Compare responses from different models
-python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/example.md
+python ollama_prompt.py --models phi3:mini llama3:8b --prompt-file user_prompts/example.md
 
 # Run with streaming for real-time comparison
-python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/example.md --stream
+python ollama_prompt.py --models phi3:mini llama3:8b --prompt-file user_prompts/example.md --stream
+
+# Multiple output modes:
+# 1. Real-time streaming
+# 2. Complete formatted response
+# 3. Both (streaming + complete)
+# 4. Save only
 ```
 
 ## Prompt Experimentation Examples
@@ -79,15 +81,17 @@ python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/
 mkdir -p system_prompts
 mkdir -p user_prompts
 echo "You are a technical writer specializing in blockchain technology. Your task is to create clear, concise, and accurate documentation that explains complex concepts in simple terms." > system_prompts/blockchain_writer.md
-
 echo "Explain how blockchain consensus mechanisms work, focusing on Proof of Work and Proof of Stake. Include examples and use clear, technical language." > user_prompts/consensus_mechanisms.md
 
 # Run with multiple models for comparison
 python ollama_prompt.py \
-    --models llama3:8b phi3:mini \
+    --models phi3:mini llama3:8b \
     --system-file system_prompts/blockchain_writer.md \
     --prompt-file user_prompts/consensus_mechanisms.md \
     --stream
+
+# Use interactive menu for easier selection
+python ollama_prompt.py
 ```
 
 ### 2. Code Explanation

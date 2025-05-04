@@ -22,14 +22,16 @@ Test the tool's ability to generate high-quality technical documentation using m
 mkdir -p system_prompts
 mkdir -p user_prompts
 echo "You are a technical writer specializing in blockchain technology. Your task is to create clear, concise, and accurate documentation that explains complex concepts in simple terms." > system_prompts/blockchain_writer.md
-
 echo "Explain how blockchain consensus mechanisms work, focusing on Proof of Work and Proof of Stake. Include examples and use clear, technical language." > user_prompts/consensus_mechanisms.md
 
-# Run with Ollama
+# Run with Ollama using enhanced CLI menu
+python ollama_prompt.py
+
+# Or command line with specific models
 python ollama_prompt.py \
+    --models phi3:mini llama3:8b \
     --system-file system_prompts/blockchain_writer.md \
     --prompt-file user_prompts/consensus_mechanisms.md \
-    --model llama3:8b \
     --stream
 ```
 
@@ -47,12 +49,19 @@ python ollama_prompt.py \
     --prompt-file user_prompts/consensus_mechanisms.md \
     --stream
 
-# Compare responses
+# Compare responses using recommended models
 python ollama_prompt.py \
-    --models llama3:8b mixtral:latest \
+    --models phi3:mini llama3:8b \
     --system-file system_prompts/blockchain_writer.md \
     --prompt-file user_prompts/consensus_mechanisms.md \
     --max-workers 2
+
+# Use keyboard shortcuts in interactive menu:
+# q - Quit menu
+# b - Go back
+# h - Show help
+# r - Reset to defaults
+# s - Save current settings
 ```
 
 ### Step 3: Chat Mode Testing
@@ -90,6 +99,13 @@ python ollama_prompt.py --reset-config
 # 2. Environment variables
 # 3. Configuration file
 # 4. Default values
+
+# Test keyboard shortcuts in interactive menu:
+# q - Quit menu
+# b - Go back
+# h - Show help
+# r - Reset to defaults
+# s - Save current settings
 ```
 
 ### Expected Results
