@@ -939,6 +939,8 @@ def main():
                         help="Set API base URL (for Ollama default: http://localhost:11434)")
     config_group.add_argument("--force-menu", action="store_true",
                         help="Force the interactive menu to be displayed")
+    config_group.add_argument("--update-config", nargs="*", action="append",
+                        help="Update configuration settings. Format: --update-config key=value key2=value2")
     
     # Set defaults from configuration
     config = config_manager.load_config()
@@ -982,6 +984,41 @@ def main():
         console.print("[bold green]Current configuration saved.[/bold green]")
         return
         
+    if args.update_config:
+        # Flatten the list of lists from nargs="*" action="append"
+        update_items = [item for sublist in args.update_config for item in sublist]
+        
+        # Parse key=value pairs
+        updates = {}
+        for item in update_items:
+            if "=" not in item:
+                console = Console()
+                console.print(f"[bold red]Error:[/bold red] Invalid format: {item}")
+                console.print("Expected format: key=value")
+                return
+            
+            key, value = item.split("=", 1)
+            updates[key] = value
+        
+        # Update configuration
+        config = config_manager.load_config()
+        for key, value in updates.items():
+            if key not in config:
+                console = Console()
+                console.print(f"[bold yellow]Warning:[/bold yellow] Unknown config key: {key}")
+                continue
+            
+            if isinstance(config[key], bool):
+                # Convert string to boolean for boolean fields
+                value = value.lower() in ['true', '1', 't', 'y', 'yes']
+            
+            config[key] = value
+        
+        if config_manager.save_config(config):
+            console = Console()
+            console.print("[bold green]Configuration updated successfully.[/bold green]")
+            return
+    
     # Update base URL in configuration if specified
     if args.base_url:
         config_manager.update_config("base_url", args.base_url)
