@@ -1,6 +1,6 @@
-# Multi-Provider LLM Runner
+# LLM Prompt Experimentation Tool
 
-A Python utility for running prompts on LLM models from multiple providers (Ollama, OpenAI, HuggingFace) with parallel execution support and interactive chat mode.
+A focused Python utility for experimenting with different combinations of system and user prompts across multiple LLM models, with emphasis on Ollama and OpenAI providers.
 
 ## Quick Start
 
@@ -41,12 +41,9 @@ The tool includes a robust configuration system with multiple ways to manage set
 - Response saving to markdown files
 - Progress tracking with rich console output
 - Persistent configuration system with environment variable support
-- **New:** Interactive chat mode with conversation history
-- **New:** Support for multiple LLM providers (Ollama, OpenAI, Hugging Face)
-- **New:** Conversation management (save/load/list conversations)
-- **New:** Type-safe configuration management
-- **New:** Comprehensive error handling with custom exceptions
-- **New:** Automated testing suite for core functionality
+- Type-safe configuration management
+- Comprehensive error handling with custom exceptions
+- Automated testing suite for core functionality
 
 ## Prerequisites
 
@@ -115,16 +112,6 @@ python ollama_prompt.py --setup-keys
 - **Cons**: Requires API key with billing set up
 - **Best Models**: gpt-4o, gpt-3.5-turbo, gpt-4-turbo
 - **Use Case**: Production use, high-quality outputs
-
-### Hugging Face
-- **Pros**: Access to thousands of specialized models
-- **Cons**: Many models have access restrictions or require Pro subscription
-- **Best Models**: 
-  - google/flan-t5-small (instruction-tuned)
-  - distilgpt2 (smaller but accessible)
-  - facebook/opt-125m (smaller OPT model)
-- **Use Case**: Research, specialized applications
-- **Note**: For basic models, avoid using system prompts for best results
 
 ## Common Issues
 

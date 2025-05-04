@@ -60,34 +60,16 @@ python ollama_prompt.py --provider openai --model gpt-4o --stream
 - Supports streaming for real-time responses
 - Use without system prompt for best results with basic models
 - Best for: Research, specialized applications
-```bash
-python ollama_prompt.py --provider huggingface --model google/flan-t5-small --stream
-```
 
-## Chat Mode
+## Model Comparison
 
 ```bash
-# Start interactive chat
-python ollama_chat.py
+# Compare responses from different models
+python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/example.md
 
-# Chat with specific model
-python ollama_chat.py --model llama3:8b
-
-# Chat with streaming (recommended)
-python ollama_chat.py --stream
-
-# Set up API keys securely (recommended)
-python ollama_chat.py --setup-keys
-
-# Use alternate provider with stored key
-python ollama_chat.py --provider openai
-
-# Use environment variables for API keys
-export OLLAMA_TOOL_OPENAI_API_KEY="your_openai_key"
-export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
+# Run with streaming for real-time comparison
+python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/example.md --stream
 ```
-
-See [ChatMode.md](ChatMode.md) for more chat features.
 
 ## Custom Prompts
 

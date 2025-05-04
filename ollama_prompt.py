@@ -115,11 +115,6 @@ class AdapterWrapper:
                 self.console.print("1. Check that your API key is correct")
                 self.console.print("2. Verify you have billing set up at https://platform.openai.com/account/billing")
                 self.console.print("3. Make sure the model name is valid")
-            elif self.provider_name == "huggingface":
-                self.console.print("[bold yellow]Hugging Face troubleshooting:[/bold yellow]")
-                self.console.print("1. Check your API key at https://huggingface.co/settings/tokens")
-                self.console.print("2. Try a more accessible model like 'google/flan-t5-small' or 'distilgpt2'")
-                self.console.print("3. Some models require Pro subscription or special access")
             
             return None, None
     
@@ -592,7 +587,7 @@ def display_interactive_cli_menu(client, provider="ollama"):
     
     # 0. Select provider
     console.print("\n[bold]0. Select a provider:[/bold]")
-    providers = ["ollama", "openai", "huggingface"]
+    providers = ["ollama", "openai"]
     for i, provider_name in enumerate(providers):
         console.print(f"  {i+1}. {provider_name.capitalize()}")
     
@@ -898,10 +893,10 @@ def main():
     
     # Provider arguments
     provider_group = parser.add_argument_group("Provider Options")
-    provider_group.add_argument("--provider", type=str, choices=["ollama", "openai", "huggingface"],
+    provider_group.add_argument("--provider", type=str, choices=["ollama", "openai"],
                         help="The LLM provider to use (default: ollama)")
     provider_group.add_argument("--api-key", type=str,
-                        help="API key for OpenAI or HuggingFace (recommended to use environment variables instead)")
+                        help="API key for OpenAI (recommended to use environment variables instead)")
     provider_group.add_argument("--setup-keys", action="store_true",
                         help="Set up API keys for providers interactively")
                         
