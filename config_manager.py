@@ -104,6 +104,9 @@ def display_config():
         
         # Format default_models as a comma-separated string
         if key == 'default_models':
+            if isinstance(value, str):
+                # Split string by commas and trim whitespace
+                value = [m.strip() for m in value.split(',') if m.strip()]
             if isinstance(value, list):
                 value = ', '.join(value)
             else:

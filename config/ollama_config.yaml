@@ -1,13 +1,15 @@
 api_key: null
 base_url: http://localhost:11434
 config_version: '1.1'
+default_chat_mode: false
 default_max_workers: null
 default_model: null
-default_models: []
+default_models: ["phi3:mini", "llama3:8b"]
 default_provider: ollama
 default_save: true
 default_stream: false
 default_system_prompt: null
 default_timeout: 1200
 default_user_prompt: null
+openai_base_url: https://api.openai.com
 use_menu: true
