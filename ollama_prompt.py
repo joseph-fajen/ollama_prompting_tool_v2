@@ -551,12 +551,47 @@ def get_prompt_content(file_path):
         return None
 
 def display_interactive_cli_menu(client, provider="ollama"):
-    """Display an interactive CLI menu for users to select options"""
+    """Display an interactive CLI menu for selecting models and prompts"""
     console = Console()
+            
+    # Keyboard shortcuts
+    shortcuts = {
+        'q': 'Quit menu',
+        'b': 'Go back to previous menu',
+        'h': 'Show help',
+        'r': 'Reset to defaults',
+        's': 'Save current settings'
+    }
+            
+    # Help system
+    def show_help():
+        console.print("\n[bold]Keyboard Shortcuts:[/bold]")
+        for key, description in shortcuts.items():
+            console.print(f"  • [bold]{key}[/bold]: {description}")
+        console.print("\n[bold]Navigation:[/bold]")
+        console.print("  • Use numbers to select options")
+        console.print("  • Press Enter to accept default")
+        console.print("  • Use comma-separated numbers for multiple selections")
+        console.print("\n[bold]Model Selection:[/bold]")
+        console.print("  • Fast models: phi3:mini (recommended for quick responses)")
+        console.print("  • Detailed analysis: llama3:8b (recommended for detailed analysis)")
+        console.print("\n[bold]Prompt Categories:[/bold]")
+        console.print("  • Technical Writing: For creating documentation")
+        console.print("  • Code Analysis: For code explanations")
+        console.print("  • Security: For security analysis")
+        console.print("  • Performance: For performance analysis")
+        console.print("\n[bold]Output Modes:[/bold]")
+        console.print("  • Real-time: See tokens as they're generated")
+        console.print("  • Complete: See the full formatted response")
+        console.print("  • Both: See both streaming and complete response")
+        console.print("  • Save only: Save response to file without displaying")
+            
+    # Show help at start
+    show_help()
     console.print("\n[bold blue]===== LLM Prompt CLI =====\n[/bold blue]")
     console.print("[yellow]Welcome to the Prompt CLI![/yellow]")
     console.print("This tool helps you run prompts on models from different providers.")
-    
+            
     # Show configuration status
     config = config_manager.load_config()
     if config.get("default_model") or config.get("default_models") or config.get("default_provider"):
@@ -591,13 +626,6 @@ def display_interactive_cli_menu(client, provider="ollama"):
         console.print("[bold red]DEBUG: Returning None from menu[/bold red]")
         return None
     
-    # Get available prompts
-    system_files = get_available_files("system_prompts")
-    user_prompt_files = get_available_files("user_prompts")
-    
-    # Display menu options
-    console.print("\n[bold green]Please select from the following options:[/bold green]")
-    
     # 0. Select provider
     console.print("\n[bold]0. Select a provider:[/bold]")
     providers = ["ollama", "openai"]
@@ -605,209 +633,149 @@ def display_interactive_cli_menu(client, provider="ollama"):
         console.print(f"  {i+1}. {provider_name.capitalize()}")
     
     provider_choice = input("\nEnter your provider choice (number or press Enter for default): ")
-    selected_provider = provider
-    try:
-        provider_idx = int(provider_choice) - 1
-        if 0 <= provider_idx < len(providers):
-            selected_provider = providers[provider_idx]
+    if provider_choice:
+        try:
+            selected_provider = providers[int(provider_choice) - 1]
             console.print(f"[green]Selected provider: {selected_provider.capitalize()}[/green]")
-            
-            # If switching to a non-Ollama provider, check for API key
-            if selected_provider != "ollama":
-                key_manager = api_key_manager.ApiKeyManager()
-                api_key = key_manager.get_api_key(selected_provider)
-                if not api_key:
-                    console.print(f"[bold yellow]No API key found for {selected_provider.capitalize()}[/bold yellow]")
-                    console.print(f"[bold yellow]You need to set up an API key to use {selected_provider.capitalize()}[/bold yellow]")
-                    
-                    # Prompt for API key right now
-                    api_key = key_manager.prompt_for_api_key(selected_provider)
-                    
-                    # If user didn't provide a key, fall back to Ollama
-                    if not api_key:
-                        console.print(f"[bold red]No API key provided. Falling back to Ollama.[/bold red]")
-                        selected_provider = "ollama"
+        except (ValueError, IndexError):
+            console.print("[bold red]Invalid choice. Using default provider.[/bold red]")
+            selected_provider = provider
+    else:
+        selected_provider = provider
+    
+    # 1. Select models
+    console.print("\n[bold]1. Select models:[/bold]")
+    
+    # Show model categories with descriptions
+    model_categories = show_model_categories()
+    
+    # Handle keyboard shortcuts
+    while True:
+        choice = input("\nEnter your model choice (number or press Enter for recommended): ").lower()
+        
+        if choice == 'q':
+            console.print("[bold yellow]Quitting menu...[/bold yellow]")
+            return None
+        elif choice == 'b':
+            console.print("[bold yellow]Going back to previous menu...[/bold yellow]")
+            return None
+        elif choice == 'h':
+            show_help()
+            continue
+        elif choice == 'r':
+            console.print("[bold yellow]Resetting to defaults...[/bold yellow]")
+            selected_models = ["phi3:mini", "llama3:8b"]
+            break
+        elif choice == 's':
+            console.print("[bold yellow]Saving current settings...[/bold yellow]")
+            config_manager.save_config({
+                "default_models": selected_models,
+                "default_provider": selected_provider,
+                "default_stream": stream,
+                "default_save": save_config
+            })
+            continue
+        else:
+            break
+    
+    if choice:
+        try:
+            selected_model = model_categories[choice]
+            console.print(f"[green]Selected model: {selected_model}[/green]")
+        except KeyError:
+            console.print("[bold red]Invalid choice. Using recommended models.[/bold red]")
+            selected_models = ["phi3:mini", "llama3:8b"]
+    else:
+        selected_models = ["phi3:mini", "llama3:8b"]
+    if model_choice:
+        try:
+            selected_model = model_categories[model_choice]
+            console.print(f"[green]Selected model: {selected_model}[/green]")
+        except KeyError:
+            console.print("[bold red]Invalid choice. Using recommended models.[/bold red]")
+            selected_models = ["phi3:mini", "llama3:8b"]
+    else:
+        selected_models = ["phi3:mini", "llama3:8b"]
+    
+    # 2. Select prompt category
+    console.print("\n[bold]2. Select a prompt category:[/bold]")
+    
+    prompt_categories = show_prompt_categories()
+    
+    # Handle keyboard shortcuts
+    while True:
+        choice = input("\nEnter your category choice (number): ").lower()
+        
+        if choice == 'q':
+            console.print("[bold yellow]Quitting menu...[/bold yellow]")
+            return None
+        elif choice == 'b':
+            console.print("[bold yellow]Going back to previous menu...[/bold yellow]")
+            return None
+        elif choice == 'h':
+            show_help()
+            continue
+        elif choice == 'r':
+            console.print("[bold yellow]Resetting to defaults...[/bold yellow]")
+            selected_prompt = None
+            break
+        elif choice == 's':
+            console.print("[bold yellow]Saving current settings...[/bold yellow]")
+            config_manager.save_config({
+                "default_prompt_category": category,
+                "default_provider": selected_provider,
+                "default_stream": stream,
+                "default_save": save_config
+            })
+            continue
+        else:
+            break
+    
+    if choice:
+        try:
+            category = prompt_categories[choice]
+            if category == "custom":
+                console.print("\nEnter your custom prompt (press Enter twice to finish):")
+                lines = []
+                while True:
+                    line = input()
+                    if not line and lines and not lines[-1]:
+                        break
+                    lines.append(line)
+                selected_prompt = "\n".join(lines)
+            else:
+                # Look for matching prompt file
+                prompt_files = glob.glob(f"user_prompts/*{category}*.md")
+                if prompt_files:
+                    selected_prompt = prompt_files[0]
                 else:
-                    console.print(f"[green]Found API key for {selected_provider.capitalize()}[/green]")
-                    
-                # For OpenAI, display the base URL being used
-                if selected_provider == "openai":
-                    base_url = config_manager.get_config_value("openai_base_url", "https://api.openai.com")
-                    console.print(f"[blue]Using OpenAI base URL: {base_url}[/blue]")
-        else:
-            console.print(f"[bold yellow]Invalid choice. Using default provider: {selected_provider.capitalize()}[/bold yellow]")
-    except ValueError:
-        console.print(f"[bold yellow]Invalid input. Using default provider: {selected_provider.capitalize()}[/bold yellow]")
-    
-    # If provider changed, need to recreate client/adapter
-    if selected_provider != provider:
-        if selected_provider == "ollama":
-            client = OllamaClient()
-        else:
-            # For other providers, check for API key
-            key_manager = api_key_manager.ApiKeyManager()
-            api_key = key_manager.get_api_key(selected_provider)
-            if not api_key:
-                api_key = key_manager.prompt_for_api_key(selected_provider)
-            
-            # Only proceed if we have an API key
-            if api_key:
-                try:
-                    # Get base URL for OpenAI if needed
-                    base_url = None
-                    if selected_provider == "openai":
-                        base_url = config_manager.get_config_value("openai_base_url", "https://api.openai.com")
-                        console.print(f"[bold blue]DEBUG: Using OpenAI base URL: {base_url}[/bold blue]")
-                        
-                    adapter = api_adapters.LLMAdapterFactory.create_adapter(
-                        selected_provider, 
-                        api_key=api_key,
-                        base_url=base_url
-                    )
-                    client = AdapterWrapper(adapter, selected_provider)
-                except ValueError as e:
-                    console.print(f"[bold red]Error creating adapter: {str(e)}[/bold red]")
-                    console.print(f"[bold yellow]Falling back to Ollama[/bold yellow]")
-                    selected_provider = "ollama"
-                    client = OllamaClient()
+                    console.print("[yellow]No matching prompt found. Using custom prompt.[/yellow]")
+                    selected_prompt = None
+        except KeyError:
+            console.print("[bold red]Invalid choice. Using custom prompt.[/bold red]")
+            selected_prompt = None
+    if prompt_choice:
+        try:
+            category = prompt_categories[prompt_choice]
+            if category == "custom":
+                console.print("\nEnter your custom prompt (press Enter twice to finish):")
+                lines = []
+                while True:
+                    line = input()
+                    if not line and lines and not lines[-1]:
+                        break
+                    lines.append(line)
+                selected_prompt = "\n".join(lines)
             else:
-                console.print(f"[bold red]No API key provided for {selected_provider}. Falling back to Ollama.[/bold red]")
-                selected_provider = "ollama"
-                client = OllamaClient()
-    
-    # Get available models for the selected provider
-    available_models = client.get_installed_models()
-    if not available_models:
-        if selected_provider == "ollama":
-            console.print("[bold red]No Ollama models found![/bold red]")
-            console.print("Please install models with 'ollama pull <model>' and try again.")
-            return None
-        else:
-            console.print(f"[bold red]No models available for {selected_provider}![/bold red]")
-            return None
-    
-    # 1. Select model
-    console.print("\n[bold]1. Select a model:[/bold]")
-    
-    # For OpenAI, only show the most common models to avoid overwhelming the user
-    if selected_provider == "openai":
-        # List of common OpenAI models to display
-        common_models = [
-            "gpt-4o",
-            "gpt-4-turbo",
-            "gpt-3.5-turbo",
-            "gpt-4",
-            "gpt-4o-mini",
-            "gpt-4-1106-preview",
-            "gpt-3.5-turbo-16k",
-            "gpt-3.5-turbo-instruct"
-        ]
-        
-        # Filter available models to only show those that match the common models
-        filtered_models = []
-        for common_model in common_models:
-            matches = [model for model in available_models if model.startswith(common_model)]
-            if matches:
-                # Add the shortest match (usually the base model name)
-                filtered_models.append(min(matches, key=len))
-        
-        # If we couldn't match any common models, just use the first 8 from available models
-        if not filtered_models and available_models:
-            filtered_models = available_models[:8]
-            
-        # Add an option to show all models
-        display_models = filtered_models
-        show_all_option = True
-    else:
-        # For other providers, show all available models
-        display_models = available_models
-        show_all_option = False
-    
-    # Display the models
-    for i, model in enumerate(display_models):
-        console.print(f"  {i+1}. {model}")
-    
-    # Add special options based on provider
-    special_options = []
-    
-    # Only show "Run all models" for Ollama (other providers might have too many models)
-    if selected_provider == "ollama":
-        special_options.append(("Run on all models", available_models))
-    
-    # Add "Show all models" option for OpenAI if filtered
-    if show_all_option and len(available_models) > len(display_models):
-        special_options.append(("Show all models", None))
-    
-    # Display special options
-    for i, (option_text, _) in enumerate(special_options):
-        console.print(f"  {len(display_models)+i+1}. {option_text}")
-    
-    model_choice = input("\nEnter your model choice (number): ")
-    try:
-        model_idx = int(model_choice) - 1
-        
-        # Handle special options (Run all models, Show all models)
-        if model_idx >= len(display_models) and model_idx < len(display_models) + len(special_options):
-            special_option_idx = model_idx - len(display_models)
-            option_text, option_value = special_options[special_option_idx]
-            
-            if option_text == "Run on all models":
-                selected_models = available_models
-                console.print(f"[green]Running on all models[/green]")
-            elif option_text == "Show all models":
-                # Show the full list of models and ask again
-                console.print("\n[bold]All available models:[/bold]")
-                for i, model in enumerate(available_models):
-                    console.print(f"  {i+1}. {model}")
-                
-                # Ask again with the full list
-                second_choice = input("\nEnter your model choice from the full list (number): ")
-                try:
-                    second_idx = int(second_choice) - 1
-                    if 0 <= second_idx < len(available_models):
-                        selected_models = [available_models[second_idx]]
-                        console.print(f"[green]Selected model: {available_models[second_idx]}[/green]")
-                    else:
-                        console.print(f"[bold red]Invalid choice. Using default (first model).[/bold red]")
-                        selected_models = [available_models[0]]
-                except ValueError:
-                    console.print(f"[bold red]Invalid input. Using default (first model).[/bold red]")
-                    selected_models = [available_models[0]]
-        # Regular model selection
-        elif 0 <= model_idx < len(display_models):
-            selected_models = [display_models[model_idx]]
-            console.print(f"[green]Selected model: {display_models[model_idx]}[/green]")
-        else:
-            if selected_provider == "ollama":
-                console.print("[bold red]Invalid choice. Using default (all models).[/bold red]")
-                selected_models = available_models
-            else:
-                console.print(f"[bold red]Invalid choice. Using default (first model).[/bold red]")
-                selected_models = [display_models[0] if display_models else available_models[0]]
-    except ValueError:
-        if selected_provider == "ollama":
-            console.print("[bold red]Invalid input. Using default (all models).[/bold red]")
-            selected_models = available_models
-        else:
-            console.print(f"[bold red]Invalid input. Using default (first model).[/bold red]")
-            selected_models = [display_models[0] if display_models else available_models[0]]
-    
-    # 2. Select user prompt
-    console.print("\n[bold]2. Select a user prompt:[/bold]")
-    all_user_prompts = []
-    if user_prompt_files:
-        for file in user_prompt_files:
-            all_user_prompts.append((os.path.basename(file), file))
-    else:
-        console.print("[yellow]No user prompts found in user_prompts/ directory[/yellow]")
-    
-    for i, (prompt_name, _) in enumerate(all_user_prompts):
-        console.print(f"  {i+1}. {prompt_name}")
-    
-    # Only ask for input if user prompts are available
-    selected_prompt = None
-    if all_user_prompts:
-        prompt_choice = input("\nEnter your user prompt choice (number): ")
+                # Look for matching prompt file
+                prompt_files = glob.glob(f"user_prompts/*{category}*.md")
+                if prompt_files:
+                    selected_prompt = prompt_files[0]
+                else:
+                    console.print("[yellow]No matching prompt found. Using custom prompt.[/yellow]")
+                    selected_prompt = None
+        except KeyError:
+            console.print("[bold red]Invalid choice. Using custom prompt.[/bold red]")
         try:
             prompt_idx = int(prompt_choice) - 1
             if 0 <= prompt_idx < len(all_user_prompts):
@@ -860,14 +828,67 @@ def display_interactive_cli_menu(client, provider="ollama"):
         selected_system = None
         client._system_filename = "no_system"
     
-    # 4. Stream output?
+    # 4. Output mode
     console.print("\n[bold]4. Output mode:[/bold]")
-    console.print("  1. Stream - show tokens as they're generated in real-time")
-    console.print("  2. Complete - show the full formatted response when finished (default)")
+    console.print("[yellow]Streaming:[/yellow]")
+    console.print("  1. Real-time - see tokens as they're generated")
+    console.print("  2. Complete - see the full formatted response when finished")
+    console.print("[cyan]Additional Options:[/cyan]")
+    console.print("  3. Both - see streaming output followed by complete response")
+    console.print("  4. Save only - save response to file without displaying")
     
-    stream_choice = input("\nEnter your choice (number or press Enter for default): ")
-    stream = stream_choice == "1"
-    console.print(f"[green]Output mode: {'Streaming' if stream else 'Complete'}[/green]")
+    # Handle keyboard shortcuts
+    while True:
+        choice = input("\nEnter your choice (number or press Enter for default): ").lower()
+        
+        if choice == 'q':
+            console.print("[bold yellow]Quitting menu...[/bold yellow]")
+            return None
+        elif choice == 'b':
+            console.print("[bold yellow]Going back to previous menu...[/bold yellow]")
+            return None
+        elif choice == 'h':
+            show_help()
+            continue
+        elif choice == 'r':
+            console.print("[bold yellow]Resetting to defaults...[/bold yellow]")
+            stream = False
+            break
+        elif choice == 's':
+            console.print("[bold yellow]Saving current settings...[/bold yellow]")
+            config_manager.save_config({
+                "default_stream": stream,
+                "default_provider": selected_provider,
+                "default_save": save_config
+            })
+            continue
+        else:
+            break
+    
+    if choice == "1":
+        stream = True
+        console.print("[green]Output mode: Real-time streaming[/green]")
+    elif choice == "2":
+        stream = False
+        console.print("[green]Output mode: Complete formatted response[/green]")
+    elif choice == "3":
+        stream = True
+        console.print("[green]Output mode: Streaming + Complete[/green]")
+    else:
+        stream = False
+        console.print("[green]Output mode: Complete formatted response[/green]")
+    if stream_choice == "1":
+        stream = True
+        console.print("[green]Output mode: Real-time streaming[/green]")
+    elif stream_choice == "2":
+        stream = False
+        console.print("[green]Output mode: Complete formatted response[/green]")
+    elif stream_choice == "3":
+        stream = True
+        console.print("[green]Output mode: Streaming + Complete[/green]")
+    else:
+        stream = False
+        console.print("[green]Output mode: Complete formatted response[/green]")
     
     # 5. Save as defaults?
     console.print("\n[bold]5. Save these settings as defaults?[/bold]")
