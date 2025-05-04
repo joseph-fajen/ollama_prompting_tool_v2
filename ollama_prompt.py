@@ -663,8 +663,6 @@ def display_interactive_cli_menu(client, provider="ollama"):
             "3": "phi3:mini",
             "4": "llama3:8b"
         }
-    
-    # Show model categories
     model_categories = show_model_categories()
     
     # Handle keyboard shortcuts
@@ -710,6 +708,25 @@ def display_interactive_cli_menu(client, provider="ollama"):
     # 2. Select prompt category
     console.print("\n[bold]2. Select a prompt category:[/bold]")
     
+    # Define prompt categories
+    def show_prompt_categories():
+        """Display prompt categories and return mapping of choice numbers to category names"""
+        console.print("\n[bold]Prompt Categories:[/bold]")
+        console.print("[yellow]Technical Writing:[/yellow]")
+        console.print("  1. Documentation - Technical documentation prompts")
+        console.print("[cyan]Blockchain:[/cyan]")
+        console.print("  2. Smart Contracts - Smart contract explanations")
+        console.print("  3. Consensus Mechanisms - Consensus protocol explanations")
+        console.print("[green]Custom Input:[/green]")
+        console.print("  4. Custom - Enter your own prompt")
+        
+        return {
+            "1": "documentation",
+            "2": "smart_contract",
+            "3": "consensus_mechanism",
+            "4": "custom"
+        }
+    
     prompt_categories = show_prompt_categories()
     
     # Handle keyboard shortcuts
@@ -741,6 +758,10 @@ def display_interactive_cli_menu(client, provider="ollama"):
         else:
             break
     
+    # Initialize selected_prompt
+    selected_prompt = None
+    
+    # Handle category selection
     if choice:
         try:
             category = prompt_categories[choice]
@@ -753,59 +774,67 @@ def display_interactive_cli_menu(client, provider="ollama"):
                         break
                     lines.append(line)
                 selected_prompt = "\n".join(lines)
+                client._user_filename = "custom_input"
             else:
                 # Look for matching prompt file
                 prompt_files = glob.glob(f"user_prompts/*{category}*.md")
                 if prompt_files:
                     selected_prompt = prompt_files[0]
+                    client._user_filename = os.path.splitext(os.path.basename(selected_prompt))[0]
+                    console.print(f"[green]Selected prompt category: {category}[/green]")
                 else:
-                    console.print("[yellow]No matching prompt found. Using custom prompt.[/yellow]")
-                    selected_prompt = None
+                    console.print("[yellow]No matching prompt found for category.[/yellow]")
         except KeyError:
-            console.print("[bold red]Invalid choice. Using custom prompt.[/bold red]")
-            selected_prompt = None
-    if prompt_choice:
-        try:
-            category = prompt_categories[prompt_choice]
-            if category == "custom":
-                console.print("\nEnter your custom prompt (press Enter twice to finish):")
-                lines = []
-                while True:
-                    line = input()
-                    if not line and lines and not lines[-1]:
-                        break
-                    lines.append(line)
-                selected_prompt = "\n".join(lines)
-            else:
-                # Look for matching prompt file
-                prompt_files = glob.glob(f"user_prompts/*{category}*.md")
-                if prompt_files:
-                    selected_prompt = prompt_files[0]
+            console.print("[bold red]Invalid category choice.[/bold red]")
+    
+    # Get all available user prompts for direct selection if needed
+    all_user_prompts = []
+    user_prompts_path = "user_prompts"
+    system_files = get_available_files("system_prompts")
+    
+    if os.path.exists(user_prompts_path):
+        for file in get_available_files(user_prompts_path):
+            name = os.path.basename(file)
+            all_user_prompts.append((name, file))
+    
+    # Only ask for direct prompt selection if needed
+    if not selected_prompt and all_user_prompts:
+        console.print("\n[bold]Select a specific user prompt:[/bold]")
+        for i, (name, _) in enumerate(all_user_prompts):
+            console.print(f"  {i+1}. {name}")
+        
+        prompt_choice = input("\nEnter your prompt choice (number): ")
+        if prompt_choice:
+            try:
+                prompt_idx = int(prompt_choice) - 1
+                if 0 <= prompt_idx < len(all_user_prompts):
+                    selected_prompt = all_user_prompts[prompt_idx][1]
+                    prompt_name = all_user_prompts[prompt_idx][0]
+                    # Store user prompt filename (for output naming)
+                    client._user_filename = os.path.splitext(os.path.basename(selected_prompt))[0]
+                    console.print(f"[green]Selected user prompt: {prompt_name}[/green]")
                 else:
-                    console.print("[yellow]No matching prompt found. Using custom prompt.[/yellow]")
-                    selected_prompt = None
-        except KeyError:
-            console.print("[bold red]Invalid choice. Using custom prompt.[/bold red]")
-        try:
-            prompt_idx = int(prompt_choice) - 1
-            if 0 <= prompt_idx < len(all_user_prompts):
-                selected_prompt = all_user_prompts[prompt_idx][1]
-                prompt_name = all_user_prompts[prompt_idx][0]
-                # Store user prompt filename (for output naming)
-                client._user_filename = os.path.splitext(os.path.basename(selected_prompt))[0]
-                console.print(f"[green]Selected user prompt: {prompt_name}[/green]")
-            else:
-                console.print("[bold red]Invalid choice. No prompt selected. You will be asked to enter a prompt directly.[/bold red]")
-                selected_prompt = None
-                client._user_filename = "direct_input"
-        except ValueError:
-            console.print("[bold red]Invalid input. No prompt selected. You will be asked to enter a prompt directly.[/bold red]")
-            selected_prompt = None
+                    console.print("[bold red]Invalid choice number.[/bold red]")
+            except ValueError:
+                console.print("[bold red]Invalid input. Must enter a number.[/bold red]")
+    
+    # If still no prompt selected, create a custom one
+    if not selected_prompt:
+        console.print("\n[bold]Enter your custom prompt (press Enter twice to finish):[/bold]")
+        lines = []
+        while True:
+            line = input()
+            if not line and lines and not lines[-1]:
+                break
+            lines.append(line)
+        
+        if lines:
+            selected_prompt = "\n".join(lines)
             client._user_filename = "direct_input"
-    else:
-        console.print("[bold yellow]No user prompts available. You will be asked to enter a prompt directly.[/bold yellow]")
-        selected_prompt = None
-        client._user_filename = "direct_input"
+        else:
+            console.print("[bold red]No prompt provided. Using a default prompt.[/bold red]")
+            selected_prompt = "Please provide me with information about blockchain technology."
+            client._user_filename = "default_prompt"
     
     # 3. Select system prompt (optional)
     system_prompt_options = [("None", None)]
@@ -875,6 +904,7 @@ def display_interactive_cli_menu(client, provider="ollama"):
         else:
             break
     
+    # Set streaming option based on user choice
     if choice == "1":
         stream = True
         console.print("[green]Output mode: Real-time streaming[/green]")
@@ -882,18 +912,6 @@ def display_interactive_cli_menu(client, provider="ollama"):
         stream = False
         console.print("[green]Output mode: Complete formatted response[/green]")
     elif choice == "3":
-        stream = True
-        console.print("[green]Output mode: Streaming + Complete[/green]")
-    else:
-        stream = False
-        console.print("[green]Output mode: Complete formatted response[/green]")
-    if stream_choice == "1":
-        stream = True
-        console.print("[green]Output mode: Real-time streaming[/green]")
-    elif stream_choice == "2":
-        stream = False
-        console.print("[green]Output mode: Complete formatted response[/green]")
-    elif stream_choice == "3":
         stream = True
         console.print("[green]Output mode: Streaming + Complete[/green]")
     else:
@@ -1418,7 +1436,7 @@ def main():
             "2": "llama3:8b",
             "3": "phi3:mini",
             "4": "llama3:8b"
-        }\n")
+        }
     
     # Run the model(s)
     if len(models_to_run) == 1:

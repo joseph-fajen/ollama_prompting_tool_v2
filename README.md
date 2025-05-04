@@ -5,7 +5,6 @@ A focused Python utility for experimenting with different combinations of system
 ## Quick Start
 
 See [QuickStart.md](QuickStart.md) for common commands and basic usage.
-See [ChatMode.md](ChatMode.md) for using the new chat mode and API compatibility features.
 
 ## Configuration Management
 
@@ -121,7 +120,7 @@ The tool now includes advanced model comparison capabilities:
 3. Set up API keys (if using OpenAI or HuggingFace):
    ```bash
    # Interactive setup
-   python ollama_chat.py --setup-keys
+   python ollama_prompt.py --setup-keys
    
    # Or use environment variables
    export OLLAMA_TOOL_OPENAI_API_KEY="your_openai_key"
@@ -281,25 +280,6 @@ The tool implements comprehensive error handling with:
    - Authentication Problems
    - Model Compatibility Issues
 
-## Chat Mode
-
-The new chat mode provides an interactive conversation experience:
-
-```bash
-# Start a chat session
-python ollama_chat.py
-
-# With streaming (recommended for chat)
-python ollama_chat.py --stream
-```
-
-Features include:
-- Conversation history tracking
-- Save/load conversations
-- Interactive commands during chat (use `/help` to see options)
-- System prompts that persist across the conversation
-
-See [ChatMode.md](ChatMode.md) for complete documentation.
 
 ## API Compatibility
 
@@ -307,13 +287,13 @@ Support for multiple LLM providers through an adapter pattern:
 
 ```bash
 # Set up API keys securely (recommended)
-python ollama_chat.py --setup-keys
+python ollama_prompt.py --setup-keys
 
 # OpenAI-compatible API with stored key
-python ollama_chat.py --provider openai
+python ollama_prompt.py --provider openai
 
 # Hugging Face models with stored key
-python ollama_chat.py --provider huggingface
+python ollama_prompt.py --provider huggingface
 ```
 
 **Secure API Key Management:**
@@ -338,16 +318,16 @@ The tool uses a robust, type-safe configuration system that:
 3. Provides configuration commands:
    ```bash
    # Show current configuration
-   python ollama_chat.py --show-config
+   python ollama_prompt.py --show-config
    
    # Save current settings as defaults
-   python ollama_chat.py --save-config
+   python ollama_prompt.py --save-config
    
    # Reset to default configuration
-   python ollama_chat.py --reset-config
+   python ollama_prompt.py --reset-config
    
    # Update specific settings
-   python ollama_chat.py --update-config provider=openai model=gpt-3.5-turbo
+   python ollama_prompt.py --update-config provider=openai model=gpt-3.5-turbo
    ```
 
 4. Features:

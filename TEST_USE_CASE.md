@@ -64,22 +64,8 @@ python ollama_prompt.py \
 # s - Save current settings
 ```
 
-### Step 3: Chat Mode Testing
 
-```bash
-# Start chat mode
-python ollama_chat.py \
-    --model llama3:8b \
-    --stream
-
-# In chat mode, try:
-1. Ask follow-up questions about the documentation
-2. Request clarification on specific points
-3. Ask for examples
-4. Request different perspectives
-```
-
-### Step 4: Configuration Testing
+### Step 3: Configuration Testing
 
 ```bash
 # Show current configuration
@@ -115,7 +101,6 @@ python ollama_prompt.py --reset-config
    - Generate coherent, technical documentation
    - Handle streaming responses smoothly
    - Save responses to appropriate files
-   - Maintain conversation context in chat mode
    - Handle configuration updates properly
    - Respect configuration precedence rules
 
@@ -129,7 +114,6 @@ python ollama_prompt.py --reset-config
 3. The tool should:
    - Provide clear error messages if something goes wrong
    - Handle API rate limits gracefully
-   - Maintain state between chat sessions
    - Allow easy switching between providers
    - Handle environment variables correctly
 
@@ -141,13 +125,8 @@ python ollama_prompt.py --reset-config
    - Proper use of terminology
    - Logical flow
 
-2. Test chat mode for:
-   - Context preservation
-   - Responsiveness
-   - Error handling
-   - Command recognition
 
-3. Verify configuration:
+2. Verify configuration:
    - Settings are persisted correctly
    - Environment variables work as expected
    - Default values are appropriate
@@ -164,9 +143,5 @@ python ollama_prompt.py --reset-config
    - Measure response times
    - Test memory usage
 
-3. Experiment with chat mode features:
-   - Conversation history
-   - System prompt updates
-   - Model switching
 
 This test case covers the core functionality of the tool while providing a practical use case that demonstrates its capabilities in a real-world scenario.
