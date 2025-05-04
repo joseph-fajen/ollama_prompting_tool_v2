@@ -101,7 +101,14 @@ def display_config():
         # Skip config_version in display
         if key == "config_version":
             continue
-            
+        
+        # Format default_models as a comma-separated string
+        if key == 'default_models':
+            if isinstance(value, list):
+                value = ', '.join(value)
+            else:
+                value = str(value)
+        
         if value is None:
             value_str = "[italic]None[/italic]"
         elif isinstance(value, bool):

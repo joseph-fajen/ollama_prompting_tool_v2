@@ -902,13 +902,7 @@ def display_interactive_cli_menu(client, provider="ollama"):
     
     console.print(f"\n[bold blue]Starting {selected_provider.capitalize()} generation...[/bold blue]\n")
     
-    console.print("\n[bold blue]DEBUG: Menu complete, returning selections:[/bold blue]")
-    console.print(f"  • Provider: {selected_provider}")
-    console.print(f"  • Models: {selected_models}")
-    console.print(f"  • User prompt: {selected_prompt}")
-    console.print(f"  • System prompt: {selected_system}")
-    console.print(f"  • Stream: {stream}")
-    console.print(f"  • Save config: {save_config}")
+    console.print(f"\n[bold blue]Starting {selected_provider.capitalize()} generation...[/bold blue]")
     
     return selected_provider, selected_models, selected_prompt, selected_system, stream, save_config
 
