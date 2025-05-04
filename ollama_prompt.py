@@ -973,6 +973,14 @@ def main():
             console = Console()
             console.print("[bold green]Configuration reset to defaults.[/bold green]")
         return
+    
+    if args.save_config:
+        # Save the current configuration without running any prompts
+        config = config_manager.load_config()
+        config_manager.save_config(config)
+        console = Console()
+        console.print("[bold green]Current configuration saved.[/bold green]")
+        return
         
     # Update base URL in configuration if specified
     if args.base_url:
