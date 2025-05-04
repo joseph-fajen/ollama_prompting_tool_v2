@@ -45,6 +45,28 @@ The tool includes a robust configuration system with multiple ways to manage set
 - Comprehensive error handling with custom exceptions
 - Automated testing suite for core functionality
 
+## Enhanced Model Comparison Features
+
+The tool now includes advanced model comparison capabilities:
+
+1. **Detailed Response Analysis**
+   - Technical accuracy scoring (0-100)
+   - Clarity of explanation scoring (0-100)
+   - Response time measurement
+   - Word count analysis
+
+2. **Comparison Metrics**
+   - Technical Score: Evaluates technical accuracy and depth
+   - Clarity Score: Measures clarity of explanation
+   - Response Time: Performance measurement
+   - Word Count: Response length analysis
+
+3. **Parallel Execution**
+   - Run multiple models simultaneously
+   - Real-time progress tracking
+   - Detailed comparison summary
+   - Sortable results by metrics
+
 ## Prerequisites
 
 - Python 3.8+

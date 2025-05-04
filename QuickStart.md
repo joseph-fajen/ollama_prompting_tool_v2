@@ -71,6 +71,87 @@ python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/
 python ollama_prompt.py --models llama3:8b phi3:mini --prompt-file user_prompts/example.md --stream
 ```
 
+## Prompt Experimentation Examples
+
+### 1. Technical Documentation Generation
+```bash
+# Create a system prompt that defines the AI's role
+mkdir -p system_prompts
+mkdir -p user_prompts
+echo "You are a technical writer specializing in blockchain technology. Your task is to create clear, concise, and accurate documentation that explains complex concepts in simple terms." > system_prompts/blockchain_writer.md
+
+echo "Explain how blockchain consensus mechanisms work, focusing on Proof of Work and Proof of Stake. Include examples and use clear, technical language." > user_prompts/consensus_mechanisms.md
+
+# Run with multiple models for comparison
+python ollama_prompt.py \
+    --models llama3:8b phi3:mini \
+    --system-file system_prompts/blockchain_writer.md \
+    --prompt-file user_prompts/consensus_mechanisms.md \
+    --stream
+```
+
+### 2. Code Explanation
+```bash
+# Create a system prompt for code explanation
+echo "You are a senior developer explaining code to junior developers. Focus on clarity and practical examples." > system_prompts/code_explainer.md
+
+echo "Explain this Python function that implements quicksort. Include time complexity analysis and practical use cases." > user_prompts/quicksort_explanation.md
+
+# Run with different models to compare explanations
+python ollama_prompt.py \
+    --models phi3:mini llama3:8b \
+    --system-file system_prompts/code_explainer.md \
+    --prompt-file user_prompts/quicksort_explanation.md
+```
+
+### 3. Technical Analysis
+```bash
+# Create a system prompt for technical analysis
+echo "You are a technical analyst specializing in blockchain security. Your task is to analyze potential vulnerabilities and provide recommendations." > system_prompts/security_analyst.md
+
+echo "Analyze the security implications of using Proof of Stake consensus in enterprise blockchain networks. Consider both technical and business aspects." > user_prompts/stake_security.md
+
+# Run with streaming for real-time analysis
+python ollama_prompt.py \
+    --models llama3:8b phi3:mini \
+    --system-file system_prompts/security_analyst.md \
+    --prompt-file user_prompts/stake_security.md \
+    --stream
+```
+
+## Best Practices for Prompt Experimentation
+
+1. **System Prompt Design**
+   - Clearly define the AI's role and expertise
+   - Specify the desired output format
+   - Include any specific constraints or requirements
+   - Use consistent terminology
+
+2. **User Prompt Structure**
+   - Start with a clear, specific question
+   - Provide necessary context
+   - Specify desired depth of explanation
+   - Include any specific requirements
+
+3. **Model Comparison Strategy**
+   - Use different models for different aspects:
+     - Phi3:mini for quick, general explanations
+     - Llama3:8b for more detailed analysis
+   - Compare outputs for consistency and depth
+   - Use streaming mode for real-time comparison
+
+4. **Response Analysis**
+   - Compare clarity and accuracy of explanations
+   - Evaluate technical depth and completeness
+   - Check for consistency across models
+   - Consider response time vs. quality trade-offs
+
+5. **Prompt Refinement**
+   - Start with broad prompts and refine
+   - Use model outputs to identify gaps
+   - Iterate on system prompts for better results
+   - Document successful prompt combinations
+
 ## Custom Prompts
 
 ```bash

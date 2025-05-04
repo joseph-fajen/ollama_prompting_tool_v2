@@ -189,55 +189,68 @@ class AdapterWrapper:
         return None
     
     def run_prompt_on_all_models(self, prompt, models=None, save=True, stream=False, max_workers=None, timeout=600):
-        """Run a prompt on all available models or a specific list of models in parallel"""
-        if not models:
+        """
+        Run a prompt on all available models or a specified list of models in parallel.
+        
+        Args:
+            prompt: The prompt to run
+            models: List of models to run (None for all available models)
+            save: Whether to save the responses
+            stream: Whether to use streaming mode
+            max_workers: Maximum number of concurrent workers
+            timeout: Timeout for each model response
+        
+        Returns:
+            List of dictionaries containing:
+            - model: Model name
+            - response: Generated response text
+            - response_time: Time taken to generate response
+            - word_count: Number of words in the response
+            - technical_score: Score based on technical accuracy (0-100)
+            - clarity_score: Score based on clarity of explanation (0-100)
+        """
+        console = Console()
+        
+        # Get list of models to run
+        if models is None:
             models = self.get_installed_models()
-            
+        
+        # Filter out embedding models
+        models = [m for m in models if not m.endswith("-embedding")]
+        
         if not models:
-            self.console.print(f"[bold red]No {self.provider_name} models found![/bold red]")
-            return
+            console.print("[bold red]No models available to run.[/bold red]")
+            return []
+        
+        console.print(f"\n[bold]Running prompt on {len(models)} models:[/bold]")
+        for model in models:
+            console.print(f"  • {model}")
+        
+        # Create progress bar
+        with Progress(
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+            TimeRemainingColumn()
+        ) as progress:
+            task = progress.add_task("[cyan]Generating responses...", total=len(models))
             
-        self.console.print(f"[bold]Running prompt on {len(models)} models:[/bold] {', '.join(models)}\n")
-        
-        results = []
-        total_start_time = time.time()
-        
-        # If stream is True, we can't use parallel execution (would mix outputs)
-        if stream:
-            with Progress(
-                TextColumn("[progress.description]{task.description}"),
-                BarColumn(),
-                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                TimeElapsedColumn(),
-                TimeRemainingColumn(),
-                console=self.console
-            ) as progress:
-                task = progress.add_task("[green]Running models...", total=len(models))
+            # Run in parallel with ThreadPoolExecutor
+            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+                future_to_model = {}
                 
+                # Submit tasks
                 for model in models:
-                    progress.update(task, description=f"[green]Running {model}...")
-                    result = self._process_model(model, prompt, stream=stream, save=save)
-                    if result:
-                        results.append(result)
-                    progress.update(task, advance=1)
-        else:
-            # Use parallel execution for non-streaming mode
-            futures = []
-            
-            # Default to number of CPU cores if max_workers not specified
-            if max_workers is None:
-                # Use CPU count or 2, whichever is higher
-                max_workers = max(2, os.cpu_count())
-            
-            with Progress(
-                TextColumn("[progress.description]{task.description}"),
-                BarColumn(),
-                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                TimeElapsedColumn(),
-                TimeRemainingColumn(),
-                console=self.console
-            ) as progress:
-                task = progress.add_task("[green]Running models in parallel...", total=len(models))
+                    future = executor.submit(
+                        self.generate_response,
+                        model=model,
+                        prompt=prompt,
+                        stream=stream,
+                        save=save,
+                        timeout=timeout
+                    )
+                    future_to_model[future] = model
                 
                 with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
                     # Submit all jobs
