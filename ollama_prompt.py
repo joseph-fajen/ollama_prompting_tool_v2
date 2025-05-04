@@ -946,9 +946,11 @@ def main():
         save=config["default_save"],
         stream=config["default_stream"],
         all_models=False,
-        timeout=config["default_timeout"],
-        provider=config.get("default_provider", "ollama")
+        timeout=config["default_timeout"]
     )
+    
+    # Set provider default to ollama if not specified in config
+    parser.set_defaults(provider=config.get("default_provider", "ollama"))
     
     args = parser.parse_args()
     
