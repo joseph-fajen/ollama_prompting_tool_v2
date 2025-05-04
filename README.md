@@ -22,15 +22,36 @@ See [ChatMode.md](ChatMode.md) for using the new chat mode and API compatibility
 
 ## Prerequisites
 
-- Python 3.6+
-- Required packages: `pip install requests rich keyring pyyaml`
+- Python 3.8+
+- Required packages:
+  ```bash
+  pip install -r requirements.txt
+  ```
 - For Ollama provider:
   - [Ollama](https://ollama.ai/) installed locally
   - At least one model installed
+  - Ollama service running on http://localhost:11434
 - For other providers:
   - Valid API keys for OpenAI or HuggingFace
+  - API keys stored securely (recommended: use `--setup-keys` command)
 
-## Getting Started
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/joseph-fajen/ollama_prompting_tool_v2.git
+   cd ollama_prompting_tool_v2
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Set up API keys (if using OpenAI or HuggingFace):
+   ```bash
+   python ollama_chat.py --setup-keys
+   ```
 
 ### For Ollama Provider
 Before using the Ollama provider (default), ensure the Ollama service is running:
@@ -167,6 +188,27 @@ All providers implement a common interface, making it easy to switch between the
 
 ## Configuration System
 
+The tool uses a robust configuration system that:
+
+1. Stores settings in `config/ollama_config.yaml`
+2. Supports environment variables:
+   - `OLLAMA_TOOL_PROVIDER`: Default provider (ollama, openai, huggingface)
+   - `OLLAMA_TOOL_BASE_URL`: Custom API base URL
+   - `OLLAMA_TOOL_DEFAULT_MODEL`: Default model name
+   - `OLLAMA_TOOL_API_KEY`: API key for OpenAI/HuggingFace
+
+3. Provides configuration commands:
+   ```bash
+   # Show current configuration
+   python ollama_chat.py --show-config
+   
+   # Save current settings as defaults
+   python ollama_chat.py --save-config
+   
+   # Reset to default configuration
+   python ollama_chat.py --reset-config
+   ```
+
 The script now includes a configuration system that persists your preferred settings:
 
 - Configurations are stored in `config/ollama_config.yaml`
@@ -183,7 +225,31 @@ You can configure default values for:
 - Custom API URLs for different providers
 - API key handling preferences
 
-## Default Behavior
+## Best Practices
+
+1. **Performance Optimization**:
+   - Use appropriate model sizes for your use case
+   - Set reasonable timeouts for API calls
+   - Use streaming mode for chat interactions
+   - Configure max workers based on system resources
+
+2. **Security**:
+   - Never hardcode API keys in code
+   - Use the keyring system for secure storage
+   - Regularly rotate API keys
+   - Monitor API usage and costs
+
+3. **Development Workflow**:
+   - Use system prompts to define consistent behavior
+   - Organize prompts in `system_prompts/` and `user_prompts/`
+   - Save important conversations for reference
+   - Use chat mode for iterative development
+
+4. **Error Handling**:
+   - The tool provides detailed error messages
+   - Check logs for troubleshooting
+   - Use try-catch blocks for critical operations
+   - Implement retry logic for API calls
 
 - If no options are specified, uses values from configuration
 - If no configuration exists, falls back to these defaults:
