@@ -79,11 +79,17 @@ python ollama_prompt.py --show-config
 # Save current settings as default
 python ollama_prompt.py --save-config
 
+# Update specific settings
+python ollama_prompt.py --update-config provider=openai model=gpt-4o
+
 # Reset to defaults
 python ollama_prompt.py --reset-config
 
-# Update specific settings
-python ollama_prompt.py --update-config provider=openai model=gpt-4o
+# Verify configuration precedence
+# 1. Command line arguments
+# 2. Environment variables
+# 3. Configuration file
+# 4. Default values
 ```
 
 ### Expected Results
@@ -95,6 +101,7 @@ python ollama_prompt.py --update-config provider=openai model=gpt-4o
    - Save responses to appropriate files
    - Maintain conversation context in chat mode
    - Handle configuration updates properly
+   - Respect configuration precedence rules
 
 2. The output should:
    - Be technically accurate
@@ -108,6 +115,7 @@ python ollama_prompt.py --update-config provider=openai model=gpt-4o
    - Handle API rate limits gracefully
    - Maintain state between chat sessions
    - Allow easy switching between providers
+   - Handle environment variables correctly
 
 ### Verification Steps
 

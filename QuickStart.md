@@ -39,11 +39,13 @@ export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
 - Local execution
 - Good starter models: `llama3:8b`, `phi3:mini`, `codellama:7b-instruct`
 - Supports streaming for real-time responses
+- Best for: Everyday usage, development, testing
 
 ### OpenAI
 - Requires API key with billing set up
 - Recommended models: `gpt-4o`, `gpt-3.5-turbo`, `gpt-4-turbo`
 - Supports streaming for real-time responses
+- Best for: Production use, high-quality outputs
 ```bash
 python ollama_prompt.py --provider openai --model gpt-4o --stream
 ```
@@ -57,6 +59,7 @@ python ollama_prompt.py --provider openai --model gpt-4o --stream
   - `facebook/opt-125m` 
 - Supports streaming for real-time responses
 - Use without system prompt for best results with basic models
+- Best for: Research, specialized applications
 ```bash
 python ollama_prompt.py --provider huggingface --model google/flan-t5-small --stream
 ```
@@ -127,22 +130,25 @@ python ollama_prompt.py --model llama3:8b --stream --save-config
 # Save provider settings as default
 python ollama_prompt.py --provider openai --model gpt-4o --save-config
 
+# Update specific settings
+python ollama_prompt.py --update-config provider=openai model=gpt-4o
+
 # Reset configuration to defaults
 python ollama_prompt.py --reset-config
 
-# Set custom Ollama API URL
+# Set custom API URLs
 python ollama_prompt.py --base-url http://192.168.1.100:11434
 
-# Set custom OpenAI-compatible API URL
-python ollama_prompt.py --provider openai --base-url http://localhost:8080 --api-key none
-
-# Update specific configuration settings
-python ollama_prompt.py --update-config provider=openai model=gpt-4o
-
-# Use environment variables for configuration
+# Use environment variables
 export OLLAMA_TOOL_PROVIDER="openai"
 export OLLAMA_TOOL_MODEL="gpt-4o"
 export OLLAMA_TOOL_BASE_URL="http://localhost:8080"
+
+# Environment variable precedence:
+# 1. Command line arguments
+# 2. Environment variables
+# 3. Configuration file
+# 4. Default values
 ```
 
 See all options: `python ollama_prompt.py --help`

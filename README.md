@@ -7,6 +7,31 @@ A Python utility for running prompts on LLM models from multiple providers (Olla
 See [QuickStart.md](QuickStart.md) for common commands and basic usage.
 See [ChatMode.md](ChatMode.md) for using the new chat mode and API compatibility features.
 
+## Configuration Management
+
+The tool includes a robust configuration system with multiple ways to manage settings:
+
+1. Command Line Arguments:
+   ```bash
+   python ollama_prompt.py --provider openai --model gpt-4o
+   ```
+
+2. Environment Variables:
+   ```bash
+   export OLLAMA_TOOL_PROVIDER="openai"
+   export OLLAMA_TOOL_MODEL="gpt-4o"
+   ```
+
+3. Configuration File:
+   - Located at `config/ollama_config.yaml`
+   - Supports all configuration options
+   - Can be updated with `--update-config` flag
+
+4. Interactive Menu:
+   - Provides easy access to common settings
+   - Shows available models and providers
+   - Allows quick switching between configurations
+
 ## Features
 
 - Interactive CLI menu for easy model and prompt selection
@@ -163,6 +188,22 @@ For more examples, see [test_examples.md](test_examples.md).
     - For Ollama: runs on all available models
     - For OpenAI: uses gpt-3.5-turbo
     - For HuggingFace: uses mistralai/Mistral-7B-Instruct-v0.1
+
+## Configuration Commands
+
+```bash
+# Show current configuration
+python ollama_prompt.py --show-config
+
+# Save current settings as default
+python ollama_prompt.py --save-config
+
+# Update specific settings
+python ollama_prompt.py --update-config provider=openai model=gpt-4o
+
+# Reset to defaults
+python ollama_prompt.py --reset-config
+```
 
 ## Error Handling
 
