@@ -211,6 +211,10 @@ export OLLAMA_TOOL_PROVIDER="openai"
 export OLLAMA_TOOL_MODEL="gpt-4o"
 export OLLAMA_TOOL_BASE_URL="http://localhost:8080"
 
+# Use environment variables for API keys
+export OLLAMA_TOOL_OPENAI_API_KEY="your_openai_key"
+export OLLAMA_TOOL_HUGGINGFACE_API_KEY="your_hf_key"
+
 # Environment variable precedence:
 # 1. Command line arguments
 # 2. Environment variables
